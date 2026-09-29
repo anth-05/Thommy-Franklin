@@ -154,17 +154,20 @@ function draw(t){
 requestAnimationFrame(draw);
 
 /* 2-step loop on the record (synthesised in the browser) */
-let ac,timer,next=0,idx=0,nb;
+let ac,out,timer,next=0,idx=0,nb,keepAlive;
 const kick=[1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0],snare=[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],hat=[0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,1],bass=[1,0,0,1,0,0,1,0,0,0,1,0,0,1,0,0];
 const notes=[55,55,55,65.4,65.4,65.4,49,49,49,49,55,55,55,73.4,73.4,73.4];
 function env(g,t,a,d){g.gain.setValueAtTime(a,t);g.gain.exponentialRampToValueAtTime(.001,t+d)}
 function noise(){const b=ac.createBuffer(1,ac.sampleRate*.3,ac.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;return b}
+/* phone speakers can't play much below ~150 Hz, so kick and bass carry higher layers that small speakers can reproduce */
 function hit(i,t){
-  const out=ac.destination;
-  if(kick[i]){const o=ac.createOscillator(),g=ac.createGain();o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(42,t+.12);env(g,t,.9,.35);o.connect(g).connect(out);o.start(t);o.stop(t+.4)}
+  if(kick[i]){const o=ac.createOscillator(),g=ac.createGain();o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(42,t+.12);env(g,t,.9,.35);o.connect(g).connect(out);o.start(t);o.stop(t+.4);
+    const k=ac.createOscillator(),kg=ac.createGain();k.type='triangle';k.frequency.setValueAtTime(420,t);k.frequency.exponentialRampToValueAtTime(160,t+.06);env(kg,t,.45,.08);k.connect(kg).connect(out);k.start(t);k.stop(t+.1);
+    const c=ac.createBufferSource(),cf=ac.createBiquadFilter(),cg=ac.createGain();c.buffer=nb;cf.type='bandpass';cf.frequency.value=3200;env(cg,t,.25,.015);c.connect(cf).connect(cg).connect(out);c.start(t);c.stop(t+.03)}
   if(snare[i]){const s=ac.createBufferSource(),f=ac.createBiquadFilter(),g=ac.createGain();s.buffer=nb;f.type='bandpass';f.frequency.value=1800;env(g,t,.5,.18);s.connect(f).connect(g).connect(out);s.start(t)}
   if(hat[i]){const s=ac.createBufferSource(),f=ac.createBiquadFilter(),g=ac.createGain();s.buffer=nb;f.type='highpass';f.frequency.value=7000;env(g,t,.18,.05);s.connect(f).connect(g).connect(out);s.start(t)}
-  if(bass[i]){const o=ac.createOscillator(),f=ac.createBiquadFilter(),g=ac.createGain();o.type='sawtooth';o.frequency.value=notes[i];f.type='lowpass';f.frequency.setValueAtTime(900,t);f.frequency.exponentialRampToValueAtTime(120,t+.25);env(g,t,.35,.3);o.connect(f).connect(g).connect(out);o.start(t);o.stop(t+.32)}
+  if(bass[i]){const o=ac.createOscillator(),f=ac.createBiquadFilter(),g=ac.createGain();o.type='sawtooth';o.frequency.value=notes[i];f.type='lowpass';f.frequency.setValueAtTime(900,t);f.frequency.exponentialRampToValueAtTime(120,t+.25);env(g,t,.35,.3);o.connect(f).connect(g).connect(out);o.start(t);o.stop(t+.32)
+    const h=ac.createOscillator(),hf=ac.createBiquadFilter(),hg=ac.createGain();h.type='square';h.frequency.value=notes[i]*4;hf.type='lowpass';hf.frequency.setValueAtTime(1400,t);hf.frequency.exponentialRampToValueAtTime(300,t+.2);env(hg,t,.12,.22);h.connect(hf).connect(hg).connect(out);h.start(t);h.stop(t+.3)}
 }
 function sched(){
   const s16=60/132/4;
@@ -175,15 +178,33 @@ function sched(){
     next+=s16;idx=(idx+1)%16;
   }
 }
+/* iOS: play through the silent switch (Safari 17+ audioSession; older Safari needs an <audio> element playing) */
+function silentWav(){const n=8000,b=new ArrayBuffer(44+n),v=new DataView(b),w=(o,t)=>[...t].forEach((c,j)=>v.setUint8(o+j,c.charCodeAt(0)));
+  w(0,'RIFF');v.setUint32(4,36+n,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,8000,true);v.setUint32(28,8000,true);v.setUint16(32,1,true);v.setUint16(34,8,true);w(36,'data');v.setUint32(40,n,true);
+  new Uint8Array(b,44).fill(128);return URL.createObjectURL(new Blob([b],{type:'audio/wav'}))}
+function unlock(){
+  if(navigator.audioSession)try{navigator.audioSession.type='playback'}catch(e){}
+  if(!ac){
+    ac=new (window.AudioContext||window.webkitAudioContext)();nb=noise();
+    const comp=ac.createDynamicsCompressor(),gain=ac.createGain();comp.threshold.value=-10;comp.ratio.value=6;gain.gain.value=.9;
+    comp.connect(gain).connect(ac.destination);out=comp;
+    const iOS=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    if(iOS&&!navigator.audioSession){keepAlive=new Audio(silentWav());keepAlive.loop=true;keepAlive.setAttribute('playsinline','')}
+  }
+  ac.resume();
+  const s=ac.createBufferSource();s.buffer=ac.createBuffer(1,1,22050);s.connect(ac.destination);s.start(0);
+  keepAlive?.play().catch(()=>{});
+}
 $('#play').onclick=async()=>{
-  if(!ac){ac=new (window.AudioContext||window.webkitAudioContext)();nb=noise()}
+  if(!playing)unlock();
   playing=!playing;
   $('#play').classList.toggle('on',playing);$('#arm').classList.toggle('on',playing);
   $('#side').textContent=playing?'2-STEP · 132':'TAP TO PLAY';
   $('#play').setAttribute('aria-label',playing?'Stop the loop':'Play a 2-step loop');
   if(playing){await ac.resume();next=ac.currentTime+.05;idx=0;timer=setInterval(sched,25);requestAnimationFrame(draw)}
-  else clearInterval(timer);
+  else{clearInterval(timer);keepAlive?.pause()}
 };
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&playing)$('#play').click()});
 
 }
 
