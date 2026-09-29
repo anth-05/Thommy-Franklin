@@ -1,0 +1,20 @@
+{
+  "name": "thommy-franklin",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Thommy Franklin artist site + EPK, with a small API for enquiries",
+  "type": "module",
+  "main": "server/index.js",
+  "engines": {
+    "node": ">=22.9"
+  },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server/index.js",
+    "dev": "node --watch --env-file-if-exists=.env server/index.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
+    "nodemailer": "^10.0.12"
+  }
+}

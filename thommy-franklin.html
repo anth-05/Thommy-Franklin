@@ -286,6 +286,9 @@ input[aria-invalid="true"]{border-color:#ff7a93}
 .done .ctas{grid-column:2}
 .mail-inline{color:var(--ice);overflow-wrap:anywhere;user-select:all}
 form.sent .f{opacity:.45;pointer-events:none}
+.hp{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}
+.form-err{grid-column:1/-1;font-size:14px;color:#ffb3c0}
+.form-err:empty{display:none}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -493,10 +496,12 @@ form.sent .f{opacity:.45;pointer-events:none}
       <div class="f"><label for="ftype">Enquiry type</label>
         <select id="ftype"><option>Club show</option><option>Festival</option><option>Private event</option><option>Request EPK</option><option>Press / interview</option><option>Label / collab</option></select></div>
       <div class="f full"><label for="fmsg">Details</label><textarea id="fmsg" placeholder="Capacity, set length, set time, budget"></textarea></div>
-      <div class="f full"><button class="btn ice" type="submit">Send enquiry</button></div>
+      <div class="hp" aria-hidden="true"><label for="fweb">Website</label><input id="fweb" name="website" tabindex="-1" autocomplete="off"></div>
+      <div class="f full"><button class="btn ice" type="submit" id="sendBtn">Send enquiry</button></div>
+      <p class="form-err" id="formErr" role="alert"></p>
       <div class="done full" id="formDone" hidden tabindex="-1">
         <svg class="tick" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <div><strong>Your enquiry is ready.</strong> Copy it and send it to <span class="mail-inline">contact@wildcardmanagement.com</span> so it reaches Thommy's team.</div>
+        <div id="doneMsg"><strong>Your enquiry is ready.</strong> Copy it and send it to <span class="mail-inline">contact@wildcardmanagement.com</span> so it reaches Thommy's team.</div>
         <div class="ctas"><button class="btn ice sm" type="button" id="copyEnq">Copy enquiry</button><button class="btn sm" type="button" id="editEnq">Edit</button></div>
       </div>
     </form>
@@ -625,10 +630,33 @@ $('#bookForm').addEventListener('submit',e=>{
   e.preventDefault();let first=null;
   Object.entries(FIELDS).forEach(([id,msg])=>{let m=$('#'+id).value.trim()?'':msg;if(id==='femail'&&!m&&!/^\S+@\S+\.\S+$/.test($('#femail').value.trim()))m='This email address looks incomplete. Check for a missing @ or domain.';fieldError(id,m);if(m&&!first)first=id});
   if(first){$('#'+first).focus();return}
-  $('#bookForm').classList.add('sent');$('#formDone').hidden=false;$('#formDone').focus();
+  sendEnquiry();
 });
+/* POST to the site's API; without a backend (artifact preview, static host) fall back to copy-and-email */
+const API=(document.querySelector('meta[name="api-base"]')?.content||'').replace(/\/$/,'');
+const COPY_MSG=$('#doneMsg').innerHTML;
+const API_FIELDS={name:'fname',email:'femail',event:'fevent'};
+function showDone(sent){
+  $('#doneMsg').innerHTML=sent?`<strong>Enquiry sent.</strong> Thommy's team will reply to <span class="mail-inline"></span>.`:COPY_MSG;
+  if(sent)$('#doneMsg .mail-inline').textContent=$('#femail').value.trim();
+  $('#copyEnq').hidden=sent;$('#editEnq').textContent=sent?'Send another':'Edit';
+  $('#bookForm').classList.add('sent');$('#formDone').hidden=false;$('#formDone').focus();
+}
+async function sendEnquiry(){
+  const b=$('#sendBtn'),v=id=>$('#'+id).value.trim();$('#formErr').textContent='';
+  b.disabled=true;b.textContent='Sending…';
+  try{
+    const r=await fetch(API+'/api/enquiry',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:v('fname'),email:v('femail'),event:v('fevent'),date:v('fdate'),city:v('fcity'),type:v('ftype'),message:v('fmsg'),website:v('fweb')})});
+    const j=await r.json().catch(()=>null);
+    if(r.ok&&j?.ok)return showDone(true);
+    if(r.status===422&&j?.errors){let f=null;Object.entries(API_FIELDS).forEach(([k,id])=>{fieldError(id,j.errors[k]||'');if(j.errors[k]&&!f)f=id});if(f)return $('#'+f).focus()}
+    if(r.status===429||r.status===502){$('#formErr').textContent=(j?.error||'The enquiry could not be sent right now.')+' You can copy it and email the team instead.'}
+    showDone(false);
+  }catch(e){showDone(false)}
+  finally{b.disabled=false;b.textContent='Send enquiry'}
+}
 $('#copyEnq').onclick=e=>{const b=e.target;navigator.clipboard?.writeText(enquiryText()).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy enquiry',1800)},()=>{b.textContent='Copy failed. Select the email above';});};
-$('#editEnq').onclick=()=>{$('#bookForm').classList.remove('sent');$('#formDone').hidden=true;$('#fname').focus()};
+$('#editEnq').onclick=()=>{if($('#editEnq').textContent==='Send another'){$('#bookForm').reset();$('#formErr').textContent=''}$('#bookForm').classList.remove('sent');$('#formDone').hidden=true;$('#fname').focus()};
 document.querySelectorAll('[data-enquiry]').forEach(a=>a.addEventListener('click',()=>{$('#ftype').value=a.dataset.enquiry}));
 
 /* scrollspy: mark the section in view in the nav */

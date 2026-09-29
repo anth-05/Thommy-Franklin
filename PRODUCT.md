@@ -8,7 +8,7 @@ web
 
 ## Stack
 
-Static single-page HTML/CSS/JS (`thommy-franklin.html` with `assets/`). Previewed as a Claude artifact link; will be hosted on Thommy's own domain later, where embedded players, a sending form and file downloads become possible.
+Static single-page HTML/CSS/JS (`thommy-franklin.html` with `assets/`). Node/Express backend in `server/` serves the page and an `/api` (booking enquiries by email via SMTP; new features mount as routers). See README.md. Previewed as a Claude artifact link; will be hosted on Thommy's own domain later, where embedded players, a sending form and file downloads become possible.
 
 ## Users
 
