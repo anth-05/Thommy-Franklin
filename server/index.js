@@ -32,7 +32,14 @@ api.use((err, req, res, next) => {
 app.use('/api', api);
 
 /* Site */
-app.use('/assets', express.static(path.join(root, 'assets'), { maxAge: '7d' }));
+// CSS/JS change with every site update, so browsers must revalidate them (cheap 304s via ETag);
+// images, fonts and video rarely change and can be cached for a week.
+app.use('/assets', express.static(path.join(root, 'assets'), {
+  maxAge: '7d',
+  setHeaders: (res, file) => {
+    if (/\.(css|js)$/.test(file)) res.setHeader('Cache-Control', 'no-cache');
+  },
+}));
 // Only these files are public; the rest of the project folder (server code, .env, data) is not served.
 const PAGES = ['index', 'press', 'booking'];
 // Story and Wildcard were separate pages for a while; they're sections on the home page now.
