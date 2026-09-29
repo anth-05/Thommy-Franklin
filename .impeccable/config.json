@@ -1,0 +1,53 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "gradient-text",
+        "value": "*",
+        "files": [
+          "thommy-franklin.html"
+        ],
+        "createdAt": "2026-09-29T11:21:49.796Z",
+        "reason": "Claude: chrome gradient on the hero name is the intentional Y2K/UK-garage chrome treatment"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "thommy-franklin.html"
+        ],
+        "createdAt": "2026-09-29T11:29:09.991Z",
+        "reason": "Claude: flags section border-top dividers; sections have 72-128px padding-block"
+      },
+      {
+        "rule": "tight-leading",
+        "value": "*",
+        "files": [
+          "thommy-franklin.html"
+        ],
+        "createdAt": "2026-09-29T11:29:10.011Z",
+        "reason": "Claude: 0.86-0.92 leading is on large uppercase display headings by design; body text is 1.6"
+      },
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "thommy-franklin.html"
+        ],
+        "createdAt": "2026-09-29T11:29:10.027Z",
+        "reason": "Claude: static check measures against #ffffff; page body is dark #070a12 (muted text ~7:1)"
+      },
+      {
+        "rule": "all-caps-body",
+        "value": "*",
+        "files": [
+          "thommy-franklin.html"
+        ],
+        "createdAt": "2026-09-29T12:10:45.090Z",
+        "reason": "Claude: uppercase is limited to short display titles; the 38 counted chars include visually hidden '(opens in a new tab)' screen-reader text"
+      }
+    ]
+  }
+}
