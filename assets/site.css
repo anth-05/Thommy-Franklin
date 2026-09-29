@@ -50,6 +50,8 @@ section{padding-block:clamp(64px,10vw,128px);border-top:1px solid var(--line)}
 .nav ul{display:flex;gap:26px;list-style:none;margin:0;padding:0}
 .nav ul a{font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;color:var(--mute);transition:color .2s}
 @media (hover:hover){.nav ul a:hover{color:var(--ice)}}
+.nav ul a,.nav .btn{white-space:nowrap}
+@media (max-width:1180px){.nav ul{gap:16px}.logo .word small{display:none}}
 .menu-btn{display:none;background:none;border:1px solid var(--line);border-radius:999px;color:var(--chrome);font-family:var(--f-mono);font-size:12px;padding:8px 14px;letter-spacing:.1em;cursor:pointer}
 @media (max-width:900px){
   .nav ul{display:none;position:absolute;top:64px;left:0;right:0;flex-direction:column;gap:0;background:var(--ink);border-bottom:1px solid var(--line)}
@@ -134,6 +136,48 @@ a.chip:hover{border-color:var(--ice);color:var(--chrome)}
 @media (max-width:900px){.music-grid{grid-template-columns:1fr}.more{position:static;border-left:0;padding-left:0}}
 .platforms{display:flex;flex-wrap:wrap;gap:10px;margin-top:48px;align-items:center}
 .platforms .eyebrow{margin-right:8px}
+
+/* PERFORMANCES: 4:5 frames that take a video later; until then a styled "clip coming soon" placeholder */
+#live h2{font-size:clamp(28px,7.4vw,88px)}
+.clips{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:clamp(16px,2.4vw,28px)}
+.clip{display:flex;flex-direction:column;gap:14px;min-width:0}
+.frame{position:relative;aspect-ratio:4/5;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:radial-gradient(120% 80% at 30% 20%,color-mix(in srgb,var(--deep) 55%,transparent),transparent 60%),radial-gradient(90% 70% at 80% 90%,color-mix(in srgb,var(--ice) 22%,transparent),transparent 65%),var(--ink-2)}
+.frame video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+.frame .scan{position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(143,227,255,.05) 0 1px,transparent 1px 4px);pointer-events:none}
+.frame .lights{position:absolute;inset:-20%;background:conic-gradient(from 200deg at 50% 0%,transparent 0 40%,rgba(143,227,255,.14) 45%,transparent 50% 58%,rgba(45,75,255,.22) 63%,transparent 68%);animation:sweep 9s ease-in-out infinite alternate;pointer-events:none}
+@keyframes sweep{to{transform:rotate(14deg)}}
+.frame .eq{position:absolute;left:8%;right:8%;bottom:22%;height:26%;display:flex;align-items:flex-end;gap:5%;opacity:.55}
+.frame .eq i{flex:1;background:linear-gradient(var(--ice),transparent);border-radius:3px 3px 0 0;height:30%;animation:eq 1.1s ease-in-out infinite alternate}
+.frame .eq i:nth-child(2n){animation-duration:.8s}.frame .eq i:nth-child(3n){animation-duration:1.4s}.frame .eq i:nth-child(5n){animation-delay:-.4s}
+@keyframes eq{to{height:95%}}
+.frame .ph-mark{position:absolute;right:14px;bottom:14px;width:28px;height:28px;color:var(--chrome);opacity:.5}
+.frame .play{position:absolute;left:50%;top:42%;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;display:grid;place-items:center;border:1.5px solid color-mix(in srgb,var(--chrome) 50%,transparent);background:color-mix(in srgb,var(--ink) 55%,transparent);backdrop-filter:blur(6px);color:var(--chrome)}
+.frame .play svg{width:22px;height:22px;margin-left:3px}
+.frame .soon{position:absolute;top:12px;left:12px;font-family:var(--f-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:5px 10px;border-radius:999px;background:var(--ink);border:1px solid var(--line);color:var(--mute)}
+/* hover: card lifts with an ice glow, the clip plays a muted preview (see renderLive) */
+.frame{transition:transform .35s cubic-bezier(.2,.8,.2,1),border-color .35s,box-shadow .35s}
+.frame video{transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+.frame .play{transition:transform .35s cubic-bezier(.2,.8,.2,1),background .35s,color .35s}
+.frame .preview{position:absolute;top:12px;left:12px;z-index:1;font-family:var(--f-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:5px 10px;border-radius:999px;background:var(--ice);color:var(--ink);font-weight:600;opacity:0;transform:translateY(-4px);transition:opacity .25s,transform .25s;pointer-events:none}
+.frame.previewing .preview{opacity:1;transform:none}
+@media (hover:hover){
+  .clip:hover .frame{transform:translateY(-6px);border-color:color-mix(in srgb,var(--ice) 60%,var(--line));box-shadow:0 24px 50px -24px color-mix(in srgb,var(--ice) 45%,transparent)}
+  .clip:hover .frame video{transform:scale(1.03)}
+  .clip:hover .frame .play{transform:scale(1.12);background:var(--ice);color:var(--ink)}
+  .clip.next:hover .frame{border-style:solid}
+}
+.clip h3{font-size:18px;font-stretch:112%;line-height:1.1}
+.clip .meta{font-family:var(--f-mono);font-size:12px;color:var(--mute);margin-top:6px}
+.clip .set{font-family:var(--f-mono);font-size:12px;color:var(--ice);text-decoration:none;display:inline-flex;align-items:center;gap:6px;margin-top:10px}
+@media (hover:hover){.clip .set:hover{text-decoration:underline}}
+.clip.next .frame{border-style:dashed;background:var(--ink);display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;gap:14px;padding:clamp(18px,2.4vw,28px)}
+.clip.next .frame .big-q{font-family:var(--f-display);font-weight:900;font-stretch:125%;font-size:clamp(26px,3vw,40px);text-transform:uppercase;line-height:.92}
+.clip.next .frame p{margin:0;color:var(--mute);font-size:15px;max-width:30ch}
+@media (max-width:900px){
+  .clips{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;scrollbar-width:none;margin-inline:calc(var(--gutter) * -1);padding-inline:var(--gutter);scroll-padding-inline:var(--gutter)}
+  .clips::-webkit-scrollbar{display:none}
+  .clip{flex:0 0 min(78%,320px);scroll-snap-align:start}
+}
 
 /* STORY */
 .story-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(32px,6vw,80px);align-items:start}

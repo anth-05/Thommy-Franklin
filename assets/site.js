@@ -16,6 +16,10 @@ const MUSIC=[
  {t:'Tell You Straight (TF Edit)',k:'original',d:'Feb 2025',note:'jigitz · edit',url:SC+'jigitz-tell-you-straight-frnkln-edit-draft-version',img:'assets/covers/web/tell-you-straight-edit.jpg'}
 ];
 const KIND={release:'Spotify',original:'SoundCloud',set:'DJ set'};
+/* Performances, newest first. video: clip file in assets/clips/ (shows a "clip coming soon" frame until the file exists); poster: optional still */
+const LIVE=[
+ {t:"Sissi's Amsterdam",e:'CLOSECALL x Ghosts of Garage · First club gig',d:'Aug 2026',video:'assets/clips/Thommy_clip1.mp4',poster:'assets/clips/Thommy_clip1.jpg',link:'https://www.instagram.com/p/DdeiCcbDAYn/',label:'Watch on Instagram'}
+];
 
 const $=s=>document.querySelector(s);
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -207,6 +211,31 @@ $('#play').onclick=async()=>{
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&playing)$('#play').click()});
 
 }
+
+/* performances */
+const PLAY='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg>';
+const CLIP_SOON=`<div class="lights"></div><div class="eq" aria-hidden="true">${'<i></i>'.repeat(9)}</div><div class="scan"></div><span class="play" aria-hidden="true">${PLAY}</span><svg class="ph-mark" aria-hidden="true"><use href="#tf"/></svg><span class="soon">Clip coming soon</span>`;
+function renderLive(){
+  const ext=`<svg class="ext" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11L11 5M6 5h5v5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">(opens in a new tab)</span>`;
+  $('#clips').innerHTML=LIVE.map(p=>`<article class="clip"><div class="frame">${p.video
+    ?`<video src="${p.video}${p.poster?`" poster="${p.poster}`:'#t=0.1'}" controls playsinline preload="metadata" aria-label="Clip: ${p.t}, ${p.e}"></video>`
+    :CLIP_SOON
+  }</div><div><h3>${p.t}</h3><div class="meta">${p.e} · ${p.d}</div>${p.link?`<a class="set" href="${p.link}" target="_blank" rel="noopener">${p.label||'Listen'} ${ext}</a>`:''}</div></article>`).join('')
+  +`<article class="clip next"><div class="frame"><div class="eyebrow">Next performance</div><div class="big-q">Your stage?</div><p>First live showcase planned for early 2027. Dates are open now.</p><a class="btn ice sm" href="booking.html?type=Club%20show">Book Thommy</a></div></article>`;
+  /* clip file not uploaded yet (or unplayable): show the placeholder instead of a broken player */
+  $('#clips').querySelectorAll('video').forEach(v=>{
+    v.addEventListener('error',()=>{v.parentElement.innerHTML=CLIP_SOON},{once:true});
+    /* hover preview (mouse only): muted playback while the pointer is on the card; unmuting keeps it playing */
+    if(reduce||!matchMedia('(hover:hover)').matches)return;
+    const frame=v.parentElement,card=frame.parentElement;let preview=false;
+    frame.insertAdjacentHTML('beforeend','<span class="preview" aria-hidden="true">Preview · click for sound</span>');
+    card.addEventListener('mouseenter',()=>{if(!v.paused)return;preview=true;v.muted=true;frame.classList.add('previewing');v.play().catch(()=>{preview=false;frame.classList.remove('previewing')})});
+    card.addEventListener('mouseleave',()=>{if(!preview)return;preview=false;frame.classList.remove('previewing');v.pause();v.muted=false;v.load()});
+    v.addEventListener('volumechange',()=>{if(preview&&!v.muted){preview=false;frame.classList.remove('previewing')}});
+    v.addEventListener('click',e=>{if(!preview)return;e.preventDefault();v.muted=false;v.play()},true);
+  });
+}
+if($('#clips'))renderLive();
 
 /* first paint, then repaint art once fonts load */
 function paint(){if($('#releases'))renderMusic(document.querySelector('.tabs [aria-pressed="true"]').dataset.k);if($('#portrait'))portrait()}
