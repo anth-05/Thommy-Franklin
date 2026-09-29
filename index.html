@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Thommy Franklin</title>
+<meta name="description" content="UK Garage &amp; House producer and DJ from the Netherlands. Listen to releases, originals and DJ sets, read his story and see what's coming up.">
+<meta name="theme-color" content="#070a12">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Big+Shoulders+Display:wght@700;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><mask id="tfmask" maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="100"><rect x="4" y="4" width="92" height="92" rx="38" fill="#fff"/><rect x="31" y="31" width="38" height="38" rx="16" fill="#000"/><rect x="-30" y="39" width="160" height="22" fill="#000" transform="rotate(45 50 50)"/></mask><symbol id="tf" viewBox="0 0 100 100"><rect width="100" height="100" fill="currentColor" mask="url(#tfmask)"/></symbol></defs></svg>
+<a class="skip" href="#music">Skip to music</a>
+<nav class="nav" aria-label="Main">
+  <div class="wrap">
+    <a class="logo" href="index.html" aria-label="Thommy Franklin, home"><svg class="mark" aria-hidden="true"><use href="#tf"/></svg><span class="word"><span>Th</span><svg class="o" aria-hidden="true"><use href="#tf"/></svg><span>mmy</span><small>Franklin.</small></span></a>
+    <ul id="menu">
+      <li><a href="#music">Music</a></li>
+      <li><a href="#story">Story</a></li>
+      <li><a href="#events">Events</a></li>
+      <li><a href="press.html">Press kit</a></li>
+      <li><a href="#label">Wildcard</a></li>
+      <li><a href="booking.html">Booking</a></li>
+    </ul>
+    <a class="btn ice sm" href="booking.html">Book Thommy</a>
+    <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="menu">Menu</button>
+  </div>
+</nav>
+<header class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <div class="status">
+        <a class="chip" href="https://soundcloud.com/tfrnkln-296272056/franklin-fm-001" target="_blank" rel="noopener"><i class="dot"></i>New: Franklin FM #001</a>
+        <span class="chip">UK Garage · House</span>
+        <span class="chip">Netherlands</span>
+      </div>
+      <h1 class="name"><span>Thommy</span><span class="ln2">Franklin</span></h1>
+      <p class="lede"><strong>Nostalgic samples, modern sound, and a groove that makes everyone move at once.</strong> Thommy Franklin is a UK Garage &amp; House producer and DJ from the Netherlands, making tracks and sets built for the whole room.</p>
+      <div class="ctas">
+        <a class="btn ice" href="#music">Listen now</a>
+        <a class="btn" href="booking.html">Booking &amp; press</a>
+      </div>
+    </div>
+    <div class="deckwrap">
+      <button class="record" id="play" aria-label="Play a 2-step loop">
+        <span class="lab"><span><svg class="tf" aria-hidden="true"><use href="#tf"/></svg><span class="sub" id="side">TAP TO PLAY</span></span></span>
+      </button>
+      <div class="arm" id="arm" aria-hidden="true"></div>
+      <div class="now">
+        <div>
+          <div class="t">Don't Care</div>
+          <div class="meta">Latest single · incl. Funky Swag w/ Say Lez</div>
+        </div>
+        <a class="btn sm" href="https://open.spotify.com/album/3fs5ma0x7q7d4i9aSAsPZh" target="_blank" rel="noopener">Spotify <svg class="ext" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11L11 5M6 5h5v5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">(opens in a new tab)</span></a>
+      </div>
+    </div>
+  </div>
+  <div class="wrap"><canvas id="wave" aria-hidden="true"></canvas></div>
+  <div class="ticker" aria-hidden="true"><div id="tk"></div></div>
+</header>
+<main id="main">
+<section id="music">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><h2>Music</h2><p class="lead">Releases, originals and DJ sets.</p></div>
+      <div class="tabs" role="group" aria-label="Show">
+        <button aria-pressed="true" data-k="all">All</button>
+        <button aria-pressed="false" data-k="release">Releases</button>
+        <button aria-pressed="false" data-k="original">Originals</button>
+        <button aria-pressed="false" data-k="set">DJ sets</button>
+      </div>
+    </div>
+    <div class="music-grid">
+      <div class="shelf" id="releases"></div>
+      <aside class="more" aria-labelledby="moreTitle">
+        <div class="eyebrow" id="moreTitle">More tracks</div>
+        <ul id="moreList"></ul>
+      </aside>
+    </div>
+    <div class="platforms">
+      <span class="eyebrow">Also on</span>
+      <a class="btn sm" href="https://open.spotify.com/artist/2YTZOdcq5a1HCh8849RVjJ" target="_blank" rel="noopener">Spotify <svg class="ext" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11L11 5M6 5h5v5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">(opens in a new tab)</span></a>
+      <a class="btn sm" href="https://thommyfranklin.bandcamp.com/" target="_blank" rel="noopener">Bandcamp <svg class="ext" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11L11 5M6 5h5v5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">(opens in a new tab)</span></a>
+      <a class="btn sm" href="https://soundcloud.com/tfrnkln-296272056" target="_blank" rel="noopener">SoundCloud <svg class="ext" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11L11 5M6 5h5v5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">(opens in a new tab)</span></a>
+    </div>
+  </div>
+</section>
+
+<section id="story">
+  <div class="wrap story-grid">
+    <figure class="portrait"><canvas id="portrait" width="640" height="800" aria-hidden="true"></canvas><figcaption>Press photo coming soon</figcaption></figure>
+    <div class="story">
+      <h2 class="h-small">Story</h2>
+      <blockquote class="quote" style="margin-inline:0">
+        <p>“Sport was taken from me, and music remained. <em>Music became my new identity.</em>”</p>
+        <div class="nl" lang="nl">“Sport werd me ontnomen, en muziek bleef. Muziek werd mijn nieuwe identiteit.”</div>
+      </blockquote>
+      <p class="body">Thommy grew up around music, playing <strong>guitar, drums and piano</strong>. For years his focus was sport: he played football and basketball at national level, until an ankle injury ended that path.</p>
+      <p class="body">Music had always been there in the background. Now it's the main thing. He produces UK Garage &amp; House that mixes <strong>nostalgic samples with modern sound</strong>, and plays energetic sets that turn that feeling into movement.</p>
+      <div class="mv">
+        <div><div class="eyebrow">Mission</div><p>Bring people together through energetic UK Garage &amp; House where nostalgia and modern sound meet.</p></div>
+        <div><div class="eyebrow">Vision</div><p>An established producer in the Dutch and European scene, with his own studio and a team of creative producers.</p></div>
+      </div>
+      <ul class="values" aria-label="Core values">
+        <li>Originality</li><li>Community</li><li>Energy</li><li>Growth</li><li>Collaboration</li><li>Passion</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="events">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><h2>Upcoming events</h2></div>
+    </div>
+    <div class="events-grid">
+      <div>
+        <div class="empty" id="eventsList">
+          <div class="eyebrow">No shows announced yet</div>
+          <h3>First showcase coming early 2027</h3>
+          <p>Thommy is preparing a 2-hour set of all original music. Promoters and venues can get in touch now to talk dates.</p>
+          <a class="btn ice sm" href="booking.html?type=Club%20show">Book a date</a>
+        </div>
+        <div class="played">
+          <div class="eyebrow">Played at</div>
+          <ul><li>Niet Thuis Events</li><li>Melkweg · Niet Thuis DJ contest</li></ul>
+        </div>
+      </div>
+      <div>
+        <div class="eyebrow" style="margin-bottom:14px">What's next</div>
+        <ol class="road">
+          <li><span class="when">Sep 2026</span><span class="what"><b>Franklin FM launches</b><span>A new mix series. Episode #001 is out now.</span></span></li>
+          <li><span class="when">Autumn 2026</span><span class="what"><b>Four new demos</b><span>New originals being finished in the studio.</span></span></li>
+          <li><span class="when">Jan 2027</span><span class="what"><b>Next official release</b><span>Streaming links land here on release day.</span></span></li>
+          <li><span class="when">Feb 2027</span><span class="what"><b>First live showcase</b><span>Plus a 2-hour, all-original DJ set.</span></span></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="label" class="label">
+  <div class="wrap">
+        <div class="hand">
+      <div class="lc l2" aria-hidden="true"><span class="cn">K<br>♣</span><span class="nm">Garage</span><span class="cn b">K<br>♣</span></div>
+      <div class="lc l1 r" aria-hidden="true"><span class="cn">Q<br>♥</span><span class="nm">House</span><span class="cn b">Q<br>♥</span></div>
+      <div class="lc r2" aria-hidden="true"><span class="cn">A<br>♠</span><span class="nm">Bassline</span><span class="cn b">A<br>♠</span></div>
+      <div class="lc r1 r" aria-hidden="true"><span class="cn">J<br>♦</span><span class="nm">2-Step</span><span class="cn b">J<br>♦</span></div>
+      <div class="lc face"><img src="assets/wildcard-logo-round.png" alt="Wildcard Records logo: a jester playing card wearing headphones"></div>
+    </div>
+    <h2>wildcard<span class="us">_</span><wbr>records</h2>
+    <ul class="pillars" aria-label="What Wildcard does">
+      <li>Label</li><li>Management</li><li>Studio</li><li>Producer team</li>
+    </ul>
+    <div class="ctas">
+      <a class="btn" href="#music">Hear the music</a>
+      <a class="btn red" href="booking.html?type=Label%20/%20collab">Get in touch</a>
+      <a class="btn" href="https://www.instagram.com/wildcard_records/" target="_blank" rel="noopener">@wildcard_records <svg class="ext" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11L11 5M6 5h5v5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">(opens in a new tab)</span></a>
+    </div>
+  </div>
+</section>
+</main>
+
+<div class="mbar" id="mbar" aria-label="Quick actions">
+  <a class="btn" href="#music">Listen</a>
+  <a class="totop" href="#top" aria-label="Back to top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5l-7 7m7-7l7 7M12 5v14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+  <a class="btn ice" href="booking.html">Book Thommy</a>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div class="big" aria-hidden="true"><svg class="fmark"><use href="#tf"/></svg>Thommy<br>Franklin</div>
+      <ul class="socials">
+        <li><a href="https://www.instagram.com/thommy.franklin/" target="_blank" rel="noopener">Instagram</a></li>
+        <li><a href="https://soundcloud.com/tfrnkln-296272056" target="_blank" rel="noopener">SoundCloud</a></li>
+        <li><a href="https://open.spotify.com/artist/2YTZOdcq5a1HCh8849RVjJ" target="_blank" rel="noopener">Spotify</a></li>
+        <li><a href="https://thommyfranklin.bandcamp.com/" target="_blank" rel="noopener">Bandcamp</a></li>
+        <li><a href="https://linktr.ee/thommyfranklin" target="_blank" rel="noopener">Linktree</a></li>
+      </ul>
+    </div>
+    <div class="fine foot-wc">© 2026 Thommy Franklin · <img src="assets/wildcard-logo-round.png" alt="" width="28" height="28"> <a href="https://www.instagram.com/wildcard_records/" target="_blank" rel="noopener">Wildcard Records</a></div>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>

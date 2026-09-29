@@ -1,6 +1,16 @@
 # Thommy Franklin site
 
-Single-page artist site + EPK (`thommy-franklin.html`, `assets/`) served by a small Node/Express backend (`server/`).
+Artist site + EPK served by a small Node/Express backend (`server/`).
+
+| Page | File | Contains |
+| --- | --- | --- |
+| Home | `index.html` | Hero, music, story, upcoming events, Wildcard Records |
+| Press kit | `press.html` | Bio, quick facts, EPK request |
+| Booking | `booking.html` | Contact details and the enquiry form |
+
+All pages share `assets/site.css` and `assets/site.js`. The script only runs each feature on pages that have its markup. Tracks are the `MUSIC` list at the top of `assets/site.js`, with cover images in `assets/covers/web/`. Links like `booking.html?type=Request%20EPK` open the form with that enquiry type selected.
+
+To add a page, create the HTML file (copy the nav, footer and mobile bar from an existing page), add it to the menu on every page, and add its name to `PAGES` in `server/index.js`.
 
 ## Run
 
@@ -14,11 +24,11 @@ Without `SMTP_HOST` the server runs in preview mode: enquiry emails are printed 
 
 ## What the backend does
 
-- Serves the site at `/` and files under `/assets`.
+- Serves the pages (`/`, `/press`, `/booking`, with or without `.html`; `/story` and `/wildcard` redirect to their home-page sections) and files under `/assets`. Nothing else in the project folder is public.
 - `POST /api/enquiry`: the booking form. Validates the fields, blocks bots with a hidden honeypot field, allows 5 successful sends per IP every 15 minutes, emails the enquiry to `MAIL_TO` with Reply-To set to the sender, emails the sender a confirmation, and appends it to `data/enquiries.jsonl`.
 - `GET /api/health`: returns `{"ok":true}` for uptime checks.
 
-If the page is opened without the backend (for example as a Claude artifact), the form falls back to "copy your enquiry and email it".
+If the booking page is opened without the backend (for example as a Claude artifact), the form falls back to "copy your enquiry and email it".
 
 ## Adding a feature
 

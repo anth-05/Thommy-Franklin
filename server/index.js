@@ -33,7 +33,18 @@ app.use('/api', api);
 
 /* Site */
 app.use('/assets', express.static(path.join(root, 'assets'), { maxAge: '7d' }));
-app.get('/', (req, res) => res.sendFile(path.join(root, 'thommy-franklin.html')));
+// Only these files are public; the rest of the project folder (server code, .env, data) is not served.
+const PAGES = ['index', 'press', 'booking'];
+// Story and Wildcard were separate pages for a while; they're sections on the home page now.
+const MOVED = { story: '/#story', wildcard: '/#label' };
+app.get('/', (req, res) => res.sendFile(path.join(root, 'index.html')));
+app.get('/:page', (req, res, next) => {
+  const name = req.params.page.replace(/\.html$/, '');
+  if (MOVED[name]) return res.redirect(301, MOVED[name]);
+  if (!PAGES.includes(name)) return next();
+  res.sendFile(path.join(root, `${name}.html`));
+});
+app.get('/favicon.ico', (req, res) => res.type('png').sendFile(path.join(root, 'assets/favicon-32.png'), { maxAge: '7d' }));
 
 app.listen(config.port, () => {
   console.log(`Thommy Franklin site on http://localhost:${config.port}`);

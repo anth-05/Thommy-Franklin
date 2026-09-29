@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Book Thommy Franklin</title>
+<meta name="description" content="Book Thommy Franklin for club shows, festivals, press and collabs.">
+<meta name="theme-color" content="#070a12">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Big+Shoulders+Display:wght@700;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body class="page" data-page="booking">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><mask id="tfmask" maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="100"><rect x="4" y="4" width="92" height="92" rx="38" fill="#fff"/><rect x="31" y="31" width="38" height="38" rx="16" fill="#000"/><rect x="-30" y="39" width="160" height="22" fill="#000" transform="rotate(45 50 50)"/></mask><symbol id="tf" viewBox="0 0 100 100"><rect width="100" height="100" fill="currentColor" mask="url(#tfmask)"/></symbol></defs></svg>
+<a class="skip" href="#main">Skip to content</a>
+<nav class="nav" aria-label="Main">
+  <div class="wrap">
+    <a class="logo" href="index.html" aria-label="Thommy Franklin, home"><svg class="mark" aria-hidden="true"><use href="#tf"/></svg><span class="word"><span>Th</span><svg class="o" aria-hidden="true"><use href="#tf"/></svg><span>mmy</span><small>Franklin.</small></span></a>
+    <ul id="menu">
+      <li><a href="index.html#music">Music</a></li>
+      <li><a href="index.html#story">Story</a></li>
+      <li><a href="index.html#events">Events</a></li>
+      <li><a href="press.html">Press kit</a></li>
+      <li><a href="index.html#label">Wildcard</a></li>
+      <li><a href="booking.html" aria-current="page">Booking</a></li>
+    </ul>
+    <a class="btn ice sm" href="booking.html">Book Thommy</a>
+    <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="menu">Menu</button>
+  </div>
+</nav>
+
+<main id="main">
+<section id="booking">
+  <div class="wrap book-grid">
+    <div>
+      <h1 class="h2">Book<br>Thommy</h1>
+      <p class="lead">Club shows, festivals, press and collabs.</p>
+      <div class="contacts">
+        <div><div class="eyebrow">Bookings &amp; promos</div><div class="v"><span id="mail">contact@wildcardmanagement.com</span><button class="btn sm" id="copyMail" type="button">Copy</button></div></div>
+        <div><div class="eyebrow">Instagram</div><div class="v"><a href="https://www.instagram.com/thommy.franklin/" target="_blank" rel="noopener">@thommy.franklin <svg class="ext" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11L11 5M6 5h5v5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">(opens in a new tab)</span></a></div></div>
+        <div><div class="eyebrow">All links</div><div class="v"><a href="https://linktr.ee/thommyfranklin" target="_blank" rel="noopener">linktr.ee/thommyfranklin <svg class="ext" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11L11 5M6 5h5v5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">(opens in a new tab)</span></a></div></div>
+      </div>
+    </div>
+    <form id="bookForm" novalidate>
+      <div class="f"><label for="fname">Your name <span class="req">required</span></label><input id="fname" autocomplete="name" aria-describedby="fname-err"><span class="err" id="fname-err"></span></div>
+      <div class="f"><label for="femail">Email <span class="req">required</span></label><input id="femail" type="email" inputmode="email" autocomplete="email" aria-describedby="femail-err"><span class="err" id="femail-err"></span></div>
+      <div class="f"><label for="fevent">Event or venue <span class="req">required</span></label><input id="fevent" autocomplete="organization" aria-describedby="fevent-err"><span class="err" id="fevent-err"></span></div>
+      <div class="f"><label for="fdate">Date</label><input id="fdate" type="date"></div>
+      <div class="f"><label for="fcity">City</label><input id="fcity" autocomplete="address-level2"></div>
+      <div class="f"><label for="ftype">Enquiry type</label>
+        <select id="ftype"><option>Club show</option><option>Festival</option><option>Private event</option><option>Request EPK</option><option>Press / interview</option><option>Label / collab</option></select></div>
+      <div class="f full"><label for="fmsg">Details</label><textarea id="fmsg" placeholder="Capacity, set length, set time, budget"></textarea></div>
+      <div class="hp" aria-hidden="true"><label for="fweb">Website</label><input id="fweb" name="website" tabindex="-1" autocomplete="off"></div>
+      <div class="f full"><button class="btn ice" type="submit" id="sendBtn">Send enquiry</button></div>
+      <p class="form-err" id="formErr" role="alert"></p>
+      <div class="done full" id="formDone" hidden tabindex="-1">
+        <svg class="tick" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div id="doneMsg"><strong>Your enquiry is ready.</strong> Copy it and send it to <span class="mail-inline">contact@wildcardmanagement.com</span> so it reaches Thommy's team.</div>
+        <div class="ctas"><button class="btn ice sm" type="button" id="copyEnq">Copy enquiry</button><button class="btn sm" type="button" id="editEnq">Edit</button></div>
+      </div>
+    </form>
+  </div>
+</section>
+</main>
+
+<div class="mbar" id="mbar" aria-label="Quick actions">
+  <a class="btn" href="index.html#music">Listen</a>
+  <a class="totop" href="#" aria-label="Back to top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5l-7 7m7-7l7 7M12 5v14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+  <a class="btn ice" href="booking.html">Book Thommy</a>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div class="big" aria-hidden="true"><svg class="fmark"><use href="#tf"/></svg>Thommy<br>Franklin</div>
+      <ul class="socials">
+        <li><a href="https://www.instagram.com/thommy.franklin/" target="_blank" rel="noopener">Instagram</a></li>
+        <li><a href="https://soundcloud.com/tfrnkln-296272056" target="_blank" rel="noopener">SoundCloud</a></li>
+        <li><a href="https://open.spotify.com/artist/2YTZOdcq5a1HCh8849RVjJ" target="_blank" rel="noopener">Spotify</a></li>
+        <li><a href="https://thommyfranklin.bandcamp.com/" target="_blank" rel="noopener">Bandcamp</a></li>
+        <li><a href="https://linktr.ee/thommyfranklin" target="_blank" rel="noopener">Linktree</a></li>
+      </ul>
+    </div>
+    <div class="fine foot-wc">© 2026 Thommy Franklin · <img src="assets/wildcard-logo-round.png" alt="" width="28" height="28"> <a href="https://www.instagram.com/wildcard_records/" target="_blank" rel="noopener">Wildcard Records</a></div>
+  </div>
+</footer>
+
+<script src="assets/site.js"></script>
+</body>
+</html>
