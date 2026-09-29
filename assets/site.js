@@ -144,6 +144,7 @@ const wv=$('#wave'),wc=wv.getContext('2d');let level=0,playing=false,tick=0;
 function size(){wv.width=wv.offsetWidth*devicePixelRatio;wv.height=wv.offsetHeight*devicePixelRatio}
 size();addEventListener('resize',()=>{size();if(!playing)requestAnimationFrame(draw)});
 function draw(t){
+  if(playing&&mode==='song'){songLevel();tick=song.duration?song.currentTime/song.duration*16:0}
   const w=wv.width,h=wv.height;wc.clearRect(0,0,w,h);
   const bw=5*devicePixelRatio,bars=Math.floor(w/bw),head=playing?Math.floor((tick/16)*bars):-1;
   for(let i=0;i<bars;i++){
@@ -158,7 +159,7 @@ function draw(t){
 requestAnimationFrame(draw);
 
 /* 2-step loop on the record (synthesised in the browser) */
-let ac,out,timer,next=0,idx=0,nb,keepAlive;
+let ac,out,timer,next=0,idx=0,nb,keepAlive,mode=null;
 const kick=[1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0],snare=[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0],hat=[0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,1],bass=[1,0,0,1,0,0,1,0,0,0,1,0,0,1,0,0];
 const notes=[55,55,55,65.4,65.4,65.4,49,49,49,49,55,55,55,73.4,73.4,73.4];
 function env(g,t,a,d){g.gain.setValueAtTime(a,t);g.gain.exponentialRampToValueAtTime(.001,t+d)}
@@ -199,14 +200,37 @@ function unlock(){
   const s=ac.createBufferSource();s.buffer=ac.createBuffer(1,1,22050);s.connect(ac.destination);s.start(0);
   keepAlive?.play().catch(()=>{});
 }
-$('#play').onclick=async()=>{
-  if(!playing)unlock();
-  playing=!playing;
-  $('#play').classList.toggle('on',playing);$('#arm').classList.toggle('on',playing);
-  $('#side').textContent=playing?'2-STEP · 132':'TAP TO PLAY';
-  $('#play').setAttribute('aria-label',playing?'Stop the loop':'Play a 2-step loop');
-  if(playing){await ac.resume();next=ac.currentTime+.05;idx=0;timer=setInterval(sched,25);requestAnimationFrame(draw)}
-  else{clearInterval(timer);keepAlive?.pause()}
+/* The record plays the real single once its file is in assets/audio (start: seconds to begin at, e.g. the drop).
+   Until the file exists, or if it can't play, it falls back to the loop above. */
+const SONG={src:'assets/audio/dont-care.mp3',title:"Don't Care",start:0};
+let song=null,songOK=true,an=null,anData;
+function songLevel(){if(!an)return;an.getByteTimeDomainData(anData);let q=0;for(const v of anData){const d=(v-128)/128;q+=d*d}level=Math.min(1,Math.sqrt(q/anData.length)*2.2)} /* tuned for a loud club master */
+function setPlaying(on,label){
+  playing=on;$('#play').classList.toggle('on',on);$('#arm').classList.toggle('on',on);
+  $('#side').textContent=on?label:'TAP TO PLAY';
+  $('#play').setAttribute('aria-label',on?(mode==='song'?`Pause ${SONG.title}`:'Stop the loop'):`Play ${SONG.title}`);
+  if(on)requestAnimationFrame(draw);
+}
+function startLoop(){mode='loop';next=ac.currentTime+.05;idx=0;timer=setInterval(sched,25);setPlaying(true,'2-STEP · 132')}
+function loadSong(){
+  song=new Audio(SONG.src);song.preload='auto';song.setAttribute('playsinline','');
+  if(SONG.start)song.addEventListener('loadedmetadata',()=>{song.currentTime=SONG.start},{once:true});
+  song.addEventListener('ended',()=>{song.currentTime=SONG.start||0;keepAlive?.pause();setPlaying(false)});
+  try{an=ac.createAnalyser();an.fftSize=512;anData=new Uint8Array(an.fftSize);ac.createMediaElementSource(song).connect(an).connect(ac.destination)}catch(e){an=null}
+}
+$('#play').onclick=()=>{
+  if(playing){
+    if(mode==='song')song.pause();else clearInterval(timer);
+    keepAlive?.pause();setPlaying(false);return;
+  }
+  unlock();
+  if(!songOK)return startLoop();
+  if(!song)loadSong();
+  mode='song';setPlaying(true,SONG.title.toUpperCase());
+  song.play().catch(err=>{
+    if(err.name==='NotAllowedError'){setPlaying(false);return}
+    songOK=false;song=null;an=null;if(playing)startLoop(); /* no file yet: play the loop instead */
+  });
 };
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&playing)$('#play').click()});
 
