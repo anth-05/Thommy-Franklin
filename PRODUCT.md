@@ -22,7 +22,9 @@ The site is Thommy Franklin's portfolio and EPK in one link. It replaces a stati
 
 ## Positioning
 
-A Dutch UK Garage & House producer and DJ who fuses nostalgic samples with modern sound, backed by real musicianship (guitar, drums, piano) and an origin story: a national-level football and basketball career ended by an ankle injury, after which music became his identity.
+An Amsterdam DJ and producer (DJ since Aug 2022, producing since Nov 2023) playing 127 BPM house to 140 BPM speed garage. His sound is rhythm-heavy: strong, punchy grooves made for dancing, with a catchy vocal that returns and changes, and only occasional melody. Grew up with music at home, played piano and guitar as a kid; sport came first until he couldn't play anymore and music took its place. Mission in his words: two hours of forgetting about Monday and dancing with people who love the same music, bringing the dancefloor back to dancing.
+
+Source of truth for site copy: Thommy's own questionnaire answers (Oct 2026, sections 1–3). Earlier brief details not in his answers (national-level football/basketball, ankle injury, "nostalgic samples with modern sound", drums) were dropped from the copy; he plays piano and guitar, not drums. Sections 4–6 (vision, goals, audience, brand words) are still unanswered, so Vision and the values chips still come from the original brief.
 
 ## Operating Context
 
@@ -47,6 +49,7 @@ A Dutch UK Garage & House producer and DJ who fuses nostalgic samples with moder
 - Signature quote (NL original + EN translation) from the dev brief.
 - Voice: energetic, personal, genuine, community-facing; never corporate.
 - Tone references named by the artist (inspiration only, not to imitate): Sammy Virji, Conducta, Interplanetary Criminal, Oppidan.
+- Influences he lists himself (shown on the site): Interplanetary Criminal, Overheat, MUCKANIKS, Swingers (label).
 
 ## Evidence on Hand
 

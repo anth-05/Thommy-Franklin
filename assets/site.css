@@ -192,6 +192,7 @@ a.chip:hover{border-color:var(--ice);color:var(--chrome)}
 .story p.body strong{color:var(--chrome);font-weight:500}
 .mv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:36px}
 .mv>div{border-top:1px solid var(--line);padding-top:14px}
+.mv>.full{grid-column:1/-1}
 .mv p{margin:6px 0 0;font-size:16px;color:var(--chrome)}
 .values{display:flex;flex-wrap:wrap;gap:8px;margin-top:28px;padding:0;list-style:none}
 .values li{font-family:var(--f-display);font-weight:800;font-stretch:125%;font-size:14px;text-transform:uppercase;letter-spacing:.02em;padding:8px 14px;border:1px solid var(--line);border-radius:999px}
