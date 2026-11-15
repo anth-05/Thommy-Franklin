@@ -47,7 +47,7 @@ fitName();addEventListener('resize',fitName);document.fonts.ready.then(fitName);
 /* ticker */
 const words=['UK Garage','House',"Don't Care out now",'Franklin FM #001','Fast Lane · free download','Made for the dancefloor','Wildcard Records'];
 const run=words.map(w=>`${w}<i></i>`).join('');
-if($('#tk'))$('#tk').innerHTML=run+run+run+run;
+if($('#tk'))$('#tk').innerHTML=run;
 
 /* sleeve art */
 function art(cv,seed,title){

@@ -24,7 +24,7 @@ The site is Thommy Franklin's portfolio and EPK in one link. It replaces a stati
 
 An Amsterdam DJ and producer (DJ since Aug 2022, producing since Nov 2023) playing 127 BPM house to 140 BPM speed garage. His sound is rhythm-heavy: strong, punchy grooves made for dancing, with a catchy vocal that returns and changes, and only occasional melody. Grew up with music at home, played piano and guitar as a kid; sport came first until he couldn't play anymore and music took its place. Mission in his words: two hours of forgetting about Monday and dancing with people who love the same music, bringing the dancefloor back to dancing.
 
-Source of truth for site copy: Thommy's own questionnaire answers (Oct 2026, sections 1–3). Earlier brief details not in his answers (national-level football/basketball, ankle injury, "nostalgic samples with modern sound", drums) were dropped from the copy; he plays piano and guitar, not drums. Sections 4–6 (vision, goals, audience, brand words) are still unanswered, so Vision and the values chips still come from the original brief.
+Source of truth for site copy: Thommy's own questionnaire answers (Oct 2026, sections 1–6). Earlier brief details not in his answers (national-level football/basketball, ankle injury, "nostalgic samples with modern sound", drums, the "music became my new identity" quote, the studio/producer-team vision, the Originality/Community/... values) were dropped from the copy; he plays piano and guitar, not drums. Vision, goals (dream venue Paradiso), audience and his five words (happy, energetic, hard, rhythmic, dancing) now come from sections 4–6.
 
 ## Operating Context
 
