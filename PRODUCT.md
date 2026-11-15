@@ -8,7 +8,7 @@ web
 
 ## Stack
 
-Static multi-page HTML (`index.html` with hero, music, story, upcoming events and Wildcard; `press.html` and `booking.html` as their own pages) sharing `assets/site.css` and `assets/site.js`. Node/Express backend in `server/` serves the pages and an `/api` (booking enquiries by email via SMTP; new features mount as routers). See README.md. Previewed as a Claude artifact link; will be hosted on Thommy's own domain later, where embedded players, a sending form and file downloads become possible.
+Static multi-page HTML (`index.html` with hero, music, story, upcoming events and Wildcard; `press.html` and `booking.html` as their own pages) sharing `assets/site.css` and `assets/site.js`. Node/Express backend in `server/` serves the pages and an `/api` (booking enquiries by email via SMTP; new features mount as routers). Primary language is Dutch: page text is written in Dutch in the HTML (what search engines index); an NL/EN switch in the nav swaps to English from `assets/i18n.js` (keys via `data-i18n`), remembered per visitor, `?lang=en` links straight to English. See README.md. Previewed as a Claude artifact link; will be hosted on Thommy's own domain later, where embedded players, a sending form and file downloads become possible.
 
 ## Users
 

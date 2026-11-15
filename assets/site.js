@@ -16,6 +16,7 @@ const MUSIC=[
  {t:'Tell You Straight (TF Edit)',k:'original',d:'Feb 2025',note:'jigitz · edit',url:SC+'jigitz-tell-you-straight-frnkln-edit-draft-version',img:'assets/covers/web/tell-you-straight-edit.jpg'}
 ];
 const KIND={release:'Spotify',original:'SoundCloud',set:'DJ set'};
+const kind=k=>k==='set'?t('kind.set'):KIND[k];
 /* Performances, newest first. video: clip file in assets/clips/ (shows a "clip coming soon" frame until the file exists); poster: optional still */
 const LIVE=[
  {t:"Sissi's Amsterdam",e:'CLOSECALL x Ghosts of Garage · First club gig',d:'Aug 2026',video:'assets/clips/Thommy_clip1.mp4',poster:'assets/clips/Thommy_clip1.jpg',link:'https://www.instagram.com/p/DdeiCcbDAYn/',label:'Watch on Instagram'}
@@ -24,8 +25,40 @@ const LIVE=[
 const $=s=>document.querySelector(s);
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+/* language (strings in i18n.js): Dutch by default; ?lang=en or the NL/EN switch picks English, remembered per visitor */
+let LANG='nl';
+try{const q=new URLSearchParams(location.search).get('lang');if(q)localStorage.setItem('lang',q);LANG=q||localStorage.getItem('lang')||'nl'}catch(e){}
+if(!UI[LANG])LANG='nl';
+const t=(k,v)=>{let s=UI[LANG][k]??UI.nl[k]??k;if(v)for(const [a,b] of Object.entries(v))s=s.replace('{'+a+'}',b);return s};
+const tl=s=>LANG==='nl'?(NL_DATA[s]??s):s;
+const MONTHS_NL={Jan:'jan',Feb:'feb',Mar:'mrt',Apr:'apr',May:'mei',Jun:'jun',Jul:'jul',Aug:'aug',Sep:'sep',Oct:'okt',Nov:'nov',Dec:'dec'};
+const td=d=>LANG==='nl'?d.replace(/\b[A-Z][a-z]{2}\b/,m=>MONTHS_NL[m]||m):d;
+const ATTR={label:'aria-label',ph:'placeholder',alt:'alt',content:'content'};
+const nlText=new Map();
+function applyLang(){
+  document.documentElement.lang=LANG;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const title=el.tagName==='TITLE';if(!nlText.has(el))nlText.set(el,title?el.textContent:el.innerHTML);
+    const v=LANG==='en'?EN[el.dataset.i18n]:nlText.get(el);if(v==null)return;
+    if(title)document.title=v;else el.innerHTML=v});
+  for(const [k,a] of Object.entries(ATTR))document.querySelectorAll(`[data-i18n-${k}]`).forEach(el=>{
+    const store='nl'+k;if(!(store in el.dataset))el.dataset[store]=el.getAttribute(a)||'';
+    el.setAttribute(a,LANG==='en'?(EN[el.getAttribute('data-i18n-'+k)]??el.dataset[store]):el.dataset[store])});
+  document.querySelectorAll('[data-alt-lang]').forEach(el=>el.lang=LANG==='en'?'nl':'en');
+  document.querySelectorAll('.lang button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lang===LANG));
+}
+function setLang(l){
+  if(l===LANG||!UI[l])return;LANG=l;try{localStorage.setItem('lang',l)}catch(e){}
+  const u=new URL(location.href);if(u.searchParams.has('lang')){u.searchParams.delete('lang');history.replaceState(null,'',u)}
+  applyLang();document.dispatchEvent(new Event('langchange'));
+}
+document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
+if(LANG!=='nl')applyLang();
+const onLang=f=>document.addEventListener('langchange',f);
+
 /* nav */
-function setMenu(open){$('#menu').classList.toggle('open',open);$('#menuBtn').setAttribute('aria-expanded',open);$('#menuBtn').textContent=open?'Close':'Menu'}
+function setMenu(open){$('#menu').classList.toggle('open',open);$('#menuBtn').setAttribute('aria-expanded',open);$('#menuBtn').textContent=open?t('close'):t('menu')}
+onLang(()=>$('#menuBtn').textContent=$('#menu').classList.contains('open')?t('close'):t('menu'));
 $('#menuBtn').onclick=()=>setMenu(!$('#menu').classList.contains('open'));
 addEventListener('keydown',e=>{if(e.key==='Escape')setMenu(false)});
 document.addEventListener('click',e=>{if(!e.target.closest('.nav'))setMenu(false)});
@@ -45,9 +78,8 @@ function fitName(){
 fitName();addEventListener('resize',fitName);document.fonts.ready.then(fitName);
 
 /* ticker */
-const words=['UK Garage','House',"Don't Care out now",'Franklin FM #001','Fast Lane · free download','Made for the dancefloor','Wildcard Records'];
-const run=words.map(w=>`${w}<i></i>`).join('');
-if($('#tk'))$('#tk').innerHTML=run;
+function ticker(){if($('#tk'))$('#tk').innerHTML=t('ticker').map(w=>`${w}<i></i>`).join('')}
+ticker();onLang(ticker);
 
 /* sleeve art */
 function art(cv,seed,title){
@@ -68,9 +100,9 @@ function art(cv,seed,title){
 function renderMusic(k){
   const all=MUSIC.map((m,i)=>({...m,i})).filter(m=>k==='all'||m.k===k);
   const TOP=5,list=all.slice(0,TOP),more=all.slice(TOP);
-  $('#moreList').innerHTML=more.map(m=>`<li><a href="${m.url}" target="_blank" rel="noopener"><span class="mt">${m.t}</span><span class="mm">${m.note} · ${m.d} · ${KIND[m.k]}</span><span class="ma"><svg class="ext" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11L11 5M6 5h5v5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="sr">(opens in a new tab)</span></a></li>`).join('');
+  $('#moreList').innerHTML=more.map(m=>`<li><a href="${m.url}" target="_blank" rel="noopener"><span class="mt">${m.t}</span><span class="mm">${tl(m.note)} · ${td(m.d)} · ${kind(m.k)}</span><span class="ma"><svg class="ext" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11L11 5M6 5h5v5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="sr">${t('newtab')}</span></a></li>`).join('');
   $('.more').hidden=!more.length;$('.music-grid').classList.toggle('solo',!more.length);
-  $('#releases').innerHTML=list.length?list.map(m=>`<a class="rel" href="${m.url}" target="_blank" rel="noopener"><div class="sleeve"><div class="disc"></div>${m.img?`<img class="cover" src="${m.img}" alt="Cover art for ${m.t}" width="500" height="500" loading="lazy">`:`<canvas width="440" height="440" data-i="${m.i}"></canvas>`}${m.badge?`<span class="badge">${m.badge}</span>`:''}</div><h3>${m.t}<span class="sr"> (opens in a new tab)</span></h3><div class="meta"><span>${m.note} · ${m.d}</span><b>${KIND[m.k]}</b></div></a>`).join(''):'<p class="eyebrow">Nothing here yet.</p>';
+  $('#releases').innerHTML=list.length?list.map(m=>`<a class="rel" href="${m.url}" target="_blank" rel="noopener"><div class="sleeve"><div class="disc"></div>${m.img?`<img class="cover" src="${m.img}" alt="${t('cover',{t:m.t})}" width="500" height="500" loading="lazy">`:`<canvas width="440" height="440" data-i="${m.i}"></canvas>`}${m.badge?`<span class="badge">${tl(m.badge)}</span>`:''}</div><h3>${m.t}<span class="sr"> ${t('newtab')}</span></h3><div class="meta"><span>${tl(m.note)} · ${td(m.d)}</span><b>${kind(m.k)}</b></div></a>`).join(''):`<p class="eyebrow">${t('nothing')}</p>`;
   $('#releases').querySelectorAll('canvas').forEach(c=>art(c,+c.dataset.i+1,MUSIC[c.dataset.i].t));
 }
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
@@ -88,49 +120,58 @@ function portrait(){
 }
 
 /* copy helpers */
-if($('#copyBio'))$('#copyBio').onclick=()=>{const o=$('#copied');o.dataset.label='';try{navigator.clipboard.writeText($('#bioText').textContent).then(()=>o.textContent='Bio copied',()=>{getSelection().selectAllChildren($('#bioText'));o.textContent='Bio selected. Press Ctrl/Cmd+C to copy.'})}catch(e){getSelection().selectAllChildren($('#bioText'))}};
-if($('#copyMail'))$('#copyMail').onclick=e=>{const b=e.target;try{navigator.clipboard.writeText($('#mail').textContent).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1600)},()=>getSelection().selectAllChildren($('#mail')))}catch(err){getSelection().selectAllChildren($('#mail'))}};
+if($('#copyBio'))$('#copyBio').onclick=()=>{const o=$('#copied');o.dataset.label='';try{navigator.clipboard.writeText($('#bioText').textContent).then(()=>o.textContent=t('bioCopied'),()=>{getSelection().selectAllChildren($('#bioText'));o.textContent=t('bioSelected')})}catch(e){getSelection().selectAllChildren($('#bioText'))}};
+onLang(()=>{if($('#copyMail'))$('#copyMail').textContent=t('copy');if($('#copied'))$('#copied').textContent=''});
+if($('#copyMail'))$('#copyMail').onclick=e=>{const b=e.target;try{navigator.clipboard.writeText($('#mail').textContent).then(()=>{b.textContent=t('copied');setTimeout(()=>b.textContent=t('copy'),1600)},()=>getSelection().selectAllChildren($('#mail')))}catch(err){getSelection().selectAllChildren($('#mail'))}};
 
 /* booking form */
 if($('#bookForm')){
 /* links like booking.html?type=Request%20EPK preselect the enquiry type */
 const qt=new URLSearchParams(location.search).get('type');
 if(qt&&[...$('#ftype').options].some(o=>o.value===qt))$('#ftype').value=qt;
-const FIELDS={fname:'Add your name so the team knows who to reply to.',femail:'Add an email address the team can reply to.',fevent:'Add the event, venue or company this is for.'};
-function fieldError(id,msg){const el=$('#'+id);el.setAttribute('aria-invalid',msg?'true':'false');$('#'+id+'-err').textContent=msg||''}
+const FIELDS={fname:'err.fname',femail:'err.femail',fevent:'err.fevent'};
+function fieldError(id,key){const el=$('#'+id);el.dataset.err=key||'';el.setAttribute('aria-invalid',key?'true':'false');$('#'+id+'-err').textContent=key?t(key):''}
 Object.keys(FIELDS).forEach(id=>$('#'+id).addEventListener('input',()=>{if($('#'+id).getAttribute('aria-invalid')==='true')fieldError(id,'')}));
-function enquiryText(){const v=id=>$('#'+id).value.trim();return `Booking enquiry for Thommy Franklin\n\nName: ${v('fname')}\nEmail: ${v('femail')}\nEvent / venue: ${v('fevent')}\nDate: ${v('fdate')||'-'}\nCity: ${v('fcity')||'-'}\nType: ${v('ftype')}\n\n${v('fmsg')}`}
+function enquiryText(){const v=id=>$('#'+id).value.trim();return `${t('enq')}\n\n${t('enq.name')}: ${v('fname')}\n${t('enq.email')}: ${v('femail')}\n${t('enq.event')}: ${v('fevent')}\n${t('enq.date')}: ${v('fdate')||'-'}\n${t('enq.city')}: ${v('fcity')||'-'}\n${t('enq.type')}: ${$('#ftype').selectedOptions[0].textContent}\n\n${v('fmsg')}`}
 $('#bookForm').addEventListener('submit',e=>{
   e.preventDefault();let first=null;
-  Object.entries(FIELDS).forEach(([id,msg])=>{let m=$('#'+id).value.trim()?'':msg;if(id==='femail'&&!m&&!/^\S+@\S+\.\S+$/.test($('#femail').value.trim()))m='This email address looks incomplete. Check for a missing @ or domain.';fieldError(id,m);if(m&&!first)first=id});
+  Object.entries(FIELDS).forEach(([id,msg])=>{let m=$('#'+id).value.trim()?'':msg;if(id==='femail'&&!m&&!/^\S+@\S+\.\S+$/.test($('#femail').value.trim()))m='err.emailBad';fieldError(id,m);if(m&&!first)first=id});
   if(first){$('#'+first).focus();return}
   sendEnquiry();
 });
 /* POST to the site's API; without a backend (artifact preview, static host) fall back to copy-and-email */
 const API=(document.querySelector('meta[name="api-base"]')?.content||'').replace(/\/$/,'');
-const COPY_MSG=$('#doneMsg').innerHTML;
 const API_FIELDS={name:'fname',email:'femail',event:'fevent'};
+let doneSent=false;
+function doneText(){
+  $('#doneMsg').innerHTML=t(doneSent?'doneSent':'doneCopy');
+  if(doneSent)$('#doneMsg .mail-inline').textContent=$('#femail').value.trim();
+  $('#editEnq').textContent=t(doneSent?'sendAnother':'edit');
+}
 function showDone(sent){
-  $('#doneMsg').innerHTML=sent?`<strong>Enquiry sent.</strong> Thommy's team will reply to <span class="mail-inline"></span>.`:COPY_MSG;
-  if(sent)$('#doneMsg .mail-inline').textContent=$('#femail').value.trim();
-  $('#copyEnq').hidden=sent;$('#editEnq').textContent=sent?'Send another':'Edit';
+  doneSent=sent;doneText();$('#copyEnq').hidden=sent;
   $('#bookForm').classList.add('sent');$('#formDone').hidden=false;$('#formDone').focus();
 }
+onLang(()=>{
+  if(!$('#sendBtn').disabled)$('#sendBtn').textContent=t('send');$('#copyEnq').textContent=t('copyEnq');doneText();
+  Object.keys(FIELDS).forEach(id=>{const k=$('#'+id).dataset.err;if(k)$('#'+id+'-err').textContent=t(k)});
+  if($('#formErr').textContent)$('#formErr').textContent=t('sendFail');
+});
 async function sendEnquiry(){
   const b=$('#sendBtn'),v=id=>$('#'+id).value.trim();$('#formErr').textContent='';
-  b.disabled=true;b.textContent='Sending…';
+  b.disabled=true;b.textContent=t('sending');
   try{
     const r=await fetch(API+'/api/enquiry',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:v('fname'),email:v('femail'),event:v('fevent'),date:v('fdate'),city:v('fcity'),type:v('ftype'),message:v('fmsg'),website:v('fweb')})});
     const j=await r.json().catch(()=>null);
     if(r.ok&&j?.ok)return showDone(true);
-    if(r.status===422&&j?.errors){let f=null;Object.entries(API_FIELDS).forEach(([k,id])=>{fieldError(id,j.errors[k]||'');if(j.errors[k]&&!f)f=id});if(f)return $('#'+f).focus()}
-    if(r.status===429||r.status===502){$('#formErr').textContent=(j?.error||'The enquiry could not be sent right now.')+' You can copy it and email the team instead.'}
+    if(r.status===422&&j?.errors){let f=null;Object.entries(API_FIELDS).forEach(([k,id])=>{fieldError(id,j.errors[k]?FIELDS[id]:'');if(j.errors[k]&&!f)f=id});if(f)return $('#'+f).focus()}
+    if(r.status===429||r.status===502){$('#formErr').textContent=t('sendFail')}
     showDone(false);
   }catch(e){showDone(false)}
-  finally{b.disabled=false;b.textContent='Send enquiry'}
+  finally{b.disabled=false;b.textContent=t('send')}
 }
-$('#copyEnq').onclick=e=>{const b=e.target;navigator.clipboard?.writeText(enquiryText()).then(()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy enquiry',1800)},()=>{b.textContent='Copy failed. Select the email above';});};
-$('#editEnq').onclick=()=>{if($('#editEnq').textContent==='Send another'){$('#bookForm').reset();$('#formErr').textContent=''}$('#bookForm').classList.remove('sent');$('#formDone').hidden=true;$('#fname').focus()};
+$('#copyEnq').onclick=e=>{const b=e.target;navigator.clipboard?.writeText(enquiryText()).then(()=>{b.textContent=t('copied');setTimeout(()=>b.textContent=t('copyEnq'),1800)},()=>{b.textContent=t('copyFailed');});};
+$('#editEnq').onclick=()=>{if(doneSent){doneSent=false;$('#bookForm').reset();$('#formErr').textContent=''}$('#bookForm').classList.remove('sent');$('#formDone').hidden=true;$('#fname').focus()};
 }
 
 /* scrollspy (home): mark Music / Events in the nav while that section is in view */
@@ -207,8 +248,8 @@ let song=null,songOK=true,an=null,anData;
 function songLevel(){if(!an)return;an.getByteTimeDomainData(anData);let q=0;for(const v of anData){const d=(v-128)/128;q+=d*d}level=Math.min(1,Math.sqrt(q/anData.length)*2.2)} /* tuned for a loud club master */
 function setPlaying(on,label){
   playing=on;$('#play').classList.toggle('on',on);$('#arm').classList.toggle('on',on);
-  $('#side').textContent=on?label:'TAP TO PLAY';
-  $('#play').setAttribute('aria-label',on?(mode==='song'?`Pause ${SONG.title}`:'Stop the loop'):`Play ${SONG.title}`);
+  $('#side').textContent=on?label:t('tap');
+  $('#play').setAttribute('aria-label',on?(mode==='song'?t('pause',{t:SONG.title}):t('stopLoop')):t('play',{t:SONG.title}));
   if(on)requestAnimationFrame(draw);
 }
 function startLoop(){mode='loop';next=ac.currentTime+.05;idx=0;timer=setInterval(sched,25);setPlaying(true,'2-STEP · 132')}
@@ -233,34 +274,35 @@ $('#play').onclick=()=>{
   });
 };
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&playing)$('#play').click()});
+onLang(()=>{if(!playing)$('#side').textContent=t('tap');$('#play').setAttribute('aria-label',playing?(mode==='song'?t('pause',{t:SONG.title}):t('stopLoop')):t('play',{t:SONG.title}))});
 
 }
 
 /* performances */
 const PLAY='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg>';
-const CLIP_SOON=`<div class="lights"></div><div class="eq" aria-hidden="true">${'<i></i>'.repeat(9)}</div><div class="scan"></div><span class="play" aria-hidden="true">${PLAY}</span><svg class="ph-mark" aria-hidden="true"><use href="#tf"/></svg><span class="soon">Clip coming soon</span>`;
+const clipSoon=()=>`<div class="lights"></div><div class="eq" aria-hidden="true">${'<i></i>'.repeat(9)}</div><div class="scan"></div><span class="play" aria-hidden="true">${PLAY}</span><svg class="ph-mark" aria-hidden="true"><use href="#tf"/></svg><span class="soon">${t('clipSoon')}</span>`;
 function renderLive(){
-  const ext=`<svg class="ext" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11L11 5M6 5h5v5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">(opens in a new tab)</span>`;
+  const ext=`<svg class="ext" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11L11 5M6 5h5v5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">${t('newtab')}</span>`;
   $('#clips').innerHTML=LIVE.map(p=>`<article class="clip"><div class="frame">${p.video
-    ?`<video src="${p.video}${p.poster?`" poster="${p.poster}`:'#t=0.1'}" controls playsinline preload="metadata" aria-label="Clip: ${p.t}, ${p.e}"></video>`
-    :CLIP_SOON
-  }</div><div><h3>${p.t}</h3><div class="meta">${p.e} · ${p.d}</div>${p.link?`<a class="set" href="${p.link}" target="_blank" rel="noopener">${p.label||'Listen'} ${ext}</a>`:''}</div></article>`).join('')
-  +`<article class="clip next"><div class="frame"><div class="eyebrow">Next performance</div><div class="big-q">Your stage?</div><p>First live showcase planned for early 2027. Dates are open now.</p><a class="btn ice sm" href="booking.html?type=Club%20show">Book Thommy</a></div></article>`;
+    ?`<video src="${p.video}${p.poster?`" poster="${p.poster}`:'#t=0.1'}" controls playsinline preload="metadata" aria-label="${t('clip')}: ${p.t}, ${tl(p.e)}"></video>`
+    :clipSoon()
+  }</div><div><h3>${p.t}</h3><div class="meta">${tl(p.e)} · ${td(p.d)}</div>${p.link?`<a class="set" href="${p.link}" target="_blank" rel="noopener">${p.label?tl(p.label):t('listen')} ${ext}</a>`:''}</div></article>`).join('')
+  +`<article class="clip next"><div class="frame"><div class="eyebrow">${t('nextEyebrow')}</div><div class="big-q">${t('nextQ')}</div><p>${t('nextP')}</p><a class="btn ice sm" href="booking.html?type=Club%20show">${t('book')}</a></div></article>`;
   /* clip file not uploaded yet (or unplayable): show the placeholder instead of a broken player */
   $('#clips').querySelectorAll('video').forEach(v=>{
-    v.addEventListener('error',()=>{v.parentElement.innerHTML=CLIP_SOON},{once:true});
+    v.addEventListener('error',()=>{v.parentElement.innerHTML=clipSoon()},{once:true});
     /* hover preview (mouse only): muted playback while the pointer is on the card; unmuting keeps it playing */
     if(reduce||!matchMedia('(hover:hover)').matches)return;
     const frame=v.parentElement,card=frame.parentElement;let preview=false;
-    frame.insertAdjacentHTML('beforeend','<span class="preview" aria-hidden="true">Preview · click for sound</span>');
+    frame.insertAdjacentHTML('beforeend',`<span class="preview" aria-hidden="true">${t('preview')}</span>`);
     card.addEventListener('mouseenter',()=>{if(!v.paused)return;preview=true;v.muted=true;frame.classList.add('previewing');v.play().catch(()=>{preview=false;frame.classList.remove('previewing')})});
     card.addEventListener('mouseleave',()=>{if(!preview)return;preview=false;frame.classList.remove('previewing');v.pause();v.muted=false;v.load()});
     v.addEventListener('volumechange',()=>{if(preview&&!v.muted){preview=false;frame.classList.remove('previewing')}});
     v.addEventListener('click',e=>{if(!preview)return;e.preventDefault();v.muted=false;v.play()},true);
   });
 }
-if($('#clips'))renderLive();
+if($('#clips')){renderLive();onLang(renderLive)}
 
 /* first paint, then repaint art once fonts load */
 function paint(){if($('#releases'))renderMusic(document.querySelector('.tabs [aria-pressed="true"]').dataset.k);if($('#portrait'))portrait()}
-paint();document.fonts.ready.then(paint);
+paint();document.fonts.ready.then(paint);onLang(paint);

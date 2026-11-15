@@ -52,6 +52,15 @@ section{padding-block:clamp(64px,10vw,128px);border-top:1px solid var(--line)}
 @media (hover:hover){.nav ul a:hover{color:var(--ice)}}
 .nav ul a,.nav .btn{white-space:nowrap}
 @media (max-width:1180px){.nav ul{gap:16px}.logo .word small{display:none}}
+/* NL/EN switch: a small segmented control, stays visible next to Menu on phones */
+.nav-end{display:flex;align-items:center;gap:12px}
+.lang{display:inline-flex;gap:2px;padding:3px;border:1px solid var(--line);border-radius:999px}
+.lang button{font-family:var(--f-mono);font-size:11px;font-weight:600;letter-spacing:.1em;padding:6px 10px;border:0;border-radius:999px;background:transparent;color:var(--mute);cursor:pointer;transition:background .2s,color .2s,transform .1s ease-out}
+.lang button[aria-pressed="true"]{background:var(--chrome);color:var(--ink)}
+.lang button:active{transform:scale(.97)}
+@media (hover:hover){.lang button[aria-pressed="false"]:hover{color:var(--chrome)}}
+@media (pointer:coarse){.lang button{min-height:36px;min-width:40px}}
+@media (max-width:380px){.nav-end{gap:8px}.lang button{padding-inline:8px}}
 .menu-btn{display:none;background:none;border:1px solid var(--line);border-radius:999px;color:var(--chrome);font-family:var(--f-mono);font-size:12px;padding:8px 14px;letter-spacing:.1em;cursor:pointer}
 @media (max-width:900px){
   .nav ul{display:none;position:absolute;top:64px;left:0;right:0;flex-direction:column;gap:0;background:var(--ink);border-bottom:1px solid var(--line)}
