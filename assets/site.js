@@ -60,7 +60,7 @@ const onLang=f=>document.addEventListener('langchange',f);
 function setMenu(open){$('#menu').classList.toggle('open',open);$('#menuBtn').setAttribute('aria-expanded',open);$('#menuBtn').textContent=open?t('close'):t('menu')}
 onLang(()=>$('#menuBtn').textContent=$('#menu').classList.contains('open')?t('close'):t('menu'));
 $('#menuBtn').onclick=()=>setMenu(!$('#menu').classList.contains('open'));
-addEventListener('keydown',e=>{if(e.key==='Escape')setMenu(false)});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#menu').classList.contains('open')){setMenu(false);$('#menuBtn').focus()}});
 document.addEventListener('click',e=>{if(!e.target.closest('.nav'))setMenu(false)});
 document.querySelectorAll('#menu a').forEach(a=>a.onclick=()=>setMenu(false));
 
@@ -69,6 +69,10 @@ const hero=$('#top'),booking=$('#booking'),seen={hero:!!hero,booking:false};
 function setBar(){$('#mbar').classList.toggle('show',!seen.hero);$('#mbar').classList.toggle('compact',seen.booking)}
 const barIO=new IntersectionObserver(es=>{es.forEach(e=>{seen[e.target===hero?'hero':'booking']=e.isIntersecting});setBar()},{threshold:0});
 if(hero)barIO.observe(hero);if(booking)barIO.observe(booking);setBar();
+const onScroll=()=>$('#mbar').classList.toggle('scrolled',scrollY>innerHeight*.8);addEventListener('scroll',onScroll,{passive:true});onScroll();
+const isField=e=>!!e.target.closest?.('input,select,textarea');
+document.addEventListener('focusin',e=>{if(isField(e))$('#mbar').classList.add('typing')});
+document.addEventListener('focusout',e=>{if(isField(e))$('#mbar').classList.remove('typing')});
 
 /* fit each line of the hero name to its column */
 function fitName(){
@@ -106,7 +110,7 @@ function renderMusic(k){
   $('#releases').querySelectorAll('canvas').forEach(c=>art(c,+c.dataset.i+1,MUSIC[c.dataset.i].t));
 }
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
-  document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-pressed',x===b));renderMusic(b.dataset.k);
+  document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-pressed',x===b));renderMusic(b.dataset.k);b.scrollIntoView({inline:'nearest',block:'nearest',behavior:reduce?'auto':'smooth'});
 });
 
 /* portrait placeholder */
@@ -130,12 +134,16 @@ if($('#bookForm')){
 const qt=new URLSearchParams(location.search).get('type');
 if(qt&&[...$('#ftype').options].some(o=>o.value===qt))$('#ftype').value=qt;
 const FIELDS={fname:'err.fname',femail:'err.femail',fevent:'err.fevent'};
+{const d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());$('#fdate').min=d.toISOString().slice(0,10)}
+const EMAIL=/^\S+@\S+\.\S+$/;
+$('#femail').addEventListener('blur',()=>{const v=$('#femail').value.trim();if(v&&!EMAIL.test(v))fieldError('femail','err.emailBad')});
+const lockFields=on=>$('#bookForm').querySelectorAll('.f').forEach(f=>f.inert=on);
 function fieldError(id,key){const el=$('#'+id);el.dataset.err=key||'';el.setAttribute('aria-invalid',key?'true':'false');$('#'+id+'-err').textContent=key?t(key):''}
 Object.keys(FIELDS).forEach(id=>$('#'+id).addEventListener('input',()=>{if($('#'+id).getAttribute('aria-invalid')==='true')fieldError(id,'')}));
 function enquiryText(){const v=id=>$('#'+id).value.trim();return `${t('enq')}\n\n${t('enq.name')}: ${v('fname')}\n${t('enq.email')}: ${v('femail')}\n${t('enq.event')}: ${v('fevent')}\n${t('enq.date')}: ${v('fdate')||'-'}\n${t('enq.city')}: ${v('fcity')||'-'}\n${t('enq.type')}: ${$('#ftype').selectedOptions[0].textContent}\n\n${v('fmsg')}`}
 $('#bookForm').addEventListener('submit',e=>{
   e.preventDefault();let first=null;
-  Object.entries(FIELDS).forEach(([id,msg])=>{let m=$('#'+id).value.trim()?'':msg;if(id==='femail'&&!m&&!/^\S+@\S+\.\S+$/.test($('#femail').value.trim()))m='err.emailBad';fieldError(id,m);if(m&&!first)first=id});
+  Object.entries(FIELDS).forEach(([id,msg])=>{let m=$('#'+id).value.trim()?'':msg;if(id==='femail'&&!m&&!EMAIL.test($('#femail').value.trim()))m='err.emailBad';fieldError(id,m);if(m&&!first)first=id});
   if(first){$('#'+first).focus();return}
   sendEnquiry();
 });
@@ -150,7 +158,7 @@ function doneText(){
 }
 function showDone(sent){
   doneSent=sent;doneText();$('#copyEnq').hidden=sent;
-  $('#bookForm').classList.add('sent');$('#formDone').hidden=false;$('#formDone').focus();
+  $('#bookForm').classList.add('sent');lockFields(true);$('#formDone').hidden=false;$('#formDone').focus();
 }
 onLang(()=>{
   if(!$('#sendBtn').disabled)$('#sendBtn').textContent=t('send');$('#copyEnq').textContent=t('copyEnq');doneText();
@@ -171,13 +179,13 @@ async function sendEnquiry(){
   finally{b.disabled=false;b.textContent=t('send')}
 }
 $('#copyEnq').onclick=e=>{const b=e.target;navigator.clipboard?.writeText(enquiryText()).then(()=>{b.textContent=t('copied');setTimeout(()=>b.textContent=t('copyEnq'),1800)},()=>{b.textContent=t('copyFailed');});};
-$('#editEnq').onclick=()=>{if(doneSent){doneSent=false;$('#bookForm').reset();$('#formErr').textContent=''}$('#bookForm').classList.remove('sent');$('#formDone').hidden=true;$('#fname').focus()};
+$('#editEnq').onclick=()=>{if(doneSent){doneSent=false;$('#bookForm').reset();$('#formErr').textContent=''}$('#bookForm').classList.remove('sent');lockFields(false);$('#formDone').hidden=true;$('#fname').focus()};
 }
 
 /* scrollspy (home): mark Music / Events in the nav while that section is in view */
 const navLinks=[...document.querySelectorAll('#menu a[href^="#"]')];
-const spy=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;navLinks.forEach(a=>a.toggleAttribute('aria-current',a.getAttribute('href')==='#'+e.target.id))}),{rootMargin:'-45% 0px -50% 0px'});
-navLinks.forEach(a=>{const t=document.querySelector(a.getAttribute('href'));if(t)spy.observe(t)});
+const spy=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;navLinks.forEach(a=>{if(a.getAttribute('href')==='#'+e.target.id)a.setAttribute('aria-current','location');else a.removeAttribute('aria-current')})}),{rootMargin:'-45% 0px -50% 0px'});
+navLinks.forEach(a=>{const t=document.querySelector(a.getAttribute('href'));if(t)spy.observe(t)});if(hero)spy.observe(hero);
 
 if($('#wave')){
 /* waveform strip */
@@ -257,6 +265,9 @@ function loadSong(){
   song=new Audio(SONG.src);song.preload='auto';song.setAttribute('playsinline','');
   if(SONG.start)song.addEventListener('loadedmetadata',()=>{song.currentTime=SONG.start},{once:true});
   song.addEventListener('ended',()=>{song.currentTime=SONG.start||0;keepAlive?.pause();setPlaying(false)});
+  /* lock-screen / headphone controls: keep the record in step with the audio */
+  song.addEventListener('pause',()=>{if(playing&&mode==='song'){keepAlive?.pause();setPlaying(false)}});
+  song.addEventListener('play',()=>{if(!playing&&mode==='song')setPlaying(true,SONG.title.toUpperCase())});
   try{an=ac.createAnalyser();an.fftSize=512;anData=new Uint8Array(an.fftSize);ac.createMediaElementSource(song).connect(an).connect(ac.destination)}catch(e){an=null}
 }
 $('#play').onclick=()=>{
@@ -273,7 +284,7 @@ $('#play').onclick=()=>{
     songOK=false;song=null;an=null;if(playing)startLoop(); /* no file yet: play the loop instead */
   });
 };
-document.addEventListener('visibilitychange',()=>{if(document.hidden&&playing)$('#play').click()});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&playing&&mode==='loop')$('#play').click()});
 onLang(()=>{if(!playing)$('#side').textContent=t('tap');$('#play').setAttribute('aria-label',playing?(mode==='song'?t('pause',{t:SONG.title}):t('stopLoop')):t('play',{t:SONG.title}))});
 
 }
@@ -288,6 +299,7 @@ function renderLive(){
     :clipSoon()
   }</div><div><h3>${p.t}</h3><div class="meta">${tl(p.e)} · ${td(p.d)}</div>${p.link?`<a class="set" href="${p.link}" target="_blank" rel="noopener">${p.label?tl(p.label):t('listen')} ${ext}</a>`:''}</div></article>`).join('')
   +`<article class="clip next"><div class="frame"><div class="eyebrow">${t('nextEyebrow')}</div><div class="big-q">${t('nextQ')}</div><p>${t('nextP')}</p><a class="btn ice sm" href="booking.html?type=Club%20show">${t('book')}</a></div></article>`;
+  const n=LIVE.length;$('#clips').style.setProperty('--rest3',3-n%3);$('#clips').style.setProperty('--rest4',4-n%4);
   /* clip file not uploaded yet (or unplayable): show the placeholder instead of a broken player */
   $('#clips').querySelectorAll('video').forEach(v=>{
     v.addEventListener('error',()=>{v.parentElement.innerHTML=clipSoon()},{once:true});

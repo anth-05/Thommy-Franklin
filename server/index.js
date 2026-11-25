@@ -52,6 +52,8 @@ app.get('/:page', (req, res, next) => {
   res.sendFile(path.join(root, `${name}.html`));
 });
 app.get('/favicon.ico', (req, res) => res.type('png').sendFile(path.join(root, 'assets/favicon-32.png'), { maxAge: '7d' }));
+// Anything else: the site's own 404 page instead of Express's bare "Cannot GET".
+app.use((req, res) => res.status(404).sendFile(path.join(root, '404.html')));
 
 app.listen(config.port, () => {
   console.log(`Thommy Franklin site on http://localhost:${config.port}`);

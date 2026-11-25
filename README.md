@@ -7,6 +7,7 @@ Artist site + EPK served by a small Node/Express backend (`server/`).
 | Home | `index.html` | Hero, music, story, upcoming events, Wildcard Records |
 | Press kit | `press.html` | Bio, quick facts, EPK request |
 | Booking | `booking.html` | Contact details and the enquiry form |
+| Not found | `404.html` | Shown for any unknown URL (uses absolute `/assets/` paths so it works at any depth) |
 
 All pages share `assets/site.css` and `assets/site.js`. The script only runs each feature on pages that have its markup. Tracks are the `MUSIC` list at the top of `assets/site.js`, with cover images in `assets/covers/web/`. Links like `booking.html?type=Request%20EPK` open the form with that enquiry type selected.
 
